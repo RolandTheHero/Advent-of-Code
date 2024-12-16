@@ -39,36 +39,22 @@ class Day15 {
                 char c = line.charAt(x);
                 Tile t = Tile.getType(c);
                 Point p = new Point(x, y);
-                if (t == Tile.Robot) robotPosition = p;
+                if (t == Tile.Robot) {
+                    robotPosition = p;
+                    robotPosition2 = new Point(x * 2, y);
+                }
                 warehouse.put(p, t);
-                mapSize = p.translate(Direction.Right).translate(Direction.Down);
-            }
-            y++;
-        }
-        while (s.hasNextLine()) {
-            String line = s.nextLine();
-            for (int x = 0; x < line.length(); x++) {
-                char c = line.charAt(x);
-                robotMoves.add(Direction.getType(c));
-            }
-        }
-        System.out.println(part1());
-        
-        s = ReadFile.scan(file);
-        y = 0;
-        while (s.hasNextLine()) {
-            String line = s.nextLine();
-            if (line.isEmpty()) break;
-            for (int x = 0; x < line.length(); x++) {
-                char c = line.charAt(x);
-                Tile t = Tile.getType(c);
-                Point p = new Point(x, y);
-                if (t == Tile.Robot) robotPosition2 = new Point(x * 2, y);
                 Tile2.loadTile(p, c);
+                mapSize = p.translate(Direction.Right).translate(Direction.Down);
                 mapSize2 = new Point(p.x() * 2 + 2, p.y() + 1);
             }
             y++;
         }
+        while (s.hasNextLine()) {
+            String line = s.nextLine();
+            for (int x = 0; x < line.length(); x++) robotMoves.add(Direction.getType(line.charAt(x)));
+        }
+        System.out.println(part1());
         System.out.println(part2());
     }
     static public long part1() {
@@ -96,7 +82,7 @@ class Day15 {
         return total;
     }
     static String constructMap() {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         for (int y = 0; y < mapSize.y(); y++) {
             for (int x = 0; x < mapSize.x(); x++) {
                 Point p = new Point(x, y);
@@ -107,7 +93,7 @@ class Day15 {
         return sb.toString();
     }
     static String constructMap2() {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         for (int y = 0; y < mapSize2.y(); y++) {
             for (int x = 0; x < mapSize2.x(); x++) {
                 Point p = new Point(x, y);
@@ -168,7 +154,7 @@ enum Tile {
         if (canMove) {
             Day15.warehouse.remove(current);
             Day15.warehouse.put(next, this);
-        };
+        }
         return canMove;
     }
 }
@@ -181,6 +167,7 @@ enum Tile2 {
     Wall {
         public boolean move(Point current, Direction d) { return false; }
         public boolean move2(Point current, Direction d) { return false; }
+        public boolean canMove(Point current, Direction d) { return false; }
         public String toString() { return "#"; }
     },
     BoxL {
@@ -209,7 +196,7 @@ enum Tile2 {
             Point next = current.translate(d);
             Point rightSide = current.translate(Direction.Right);
             boolean canMove = false;
-            if (next.equals(rightSide) || d == Direction.Left) canMove = Day15.warehouse2.get(next).canMove(next, d);
+            if (d == Direction.Left || d == Direction.Right) canMove = Day15.warehouse2.get(next).canMove(next, d);
             else canMove = Day15.warehouse2.get(next).canMove(next, d) && Day15.warehouse2.get(rightSide).canMove2(rightSide, d);
             return canMove;
         }
@@ -220,12 +207,12 @@ enum Tile2 {
             Point next = current.translate(d);
             Point leftSide = current.translate(Direction.Left);
             boolean canMove = false;
-            if (next.equals(leftSide) || d == Direction.Right) canMove = Day15.warehouse2.get(next).move(next, d);
+            if (d == Direction.Left || d == Direction.Right) canMove = Day15.warehouse2.get(next).move(next, d);
             else canMove = Day15.warehouse2.get(next).move(next, d) && Day15.warehouse2.get(leftSide).move2(leftSide, d);
             if (canMove) {
                 Day15.warehouse2.remove(current);
                 Day15.warehouse2.put(next, this);
-            };
+            }
             return canMove;
         }
         public boolean move2(Point current, Direction d) {
@@ -234,14 +221,14 @@ enum Tile2 {
             if (canMove) {
                 Day15.warehouse2.remove(current);
                 Day15.warehouse2.put(next, this);
-            };
+            }
             return canMove;
         }
         public boolean canMove(Point current, Direction d) {
             Point next = current.translate(d);
             Point leftSide = current.translate(Direction.Left);
             boolean canMove = false;
-            if (next.equals(leftSide) || d == Direction.Right) canMove = Day15.warehouse2.get(next).canMove(next, d);
+            if (d == Direction.Left || d == Direction.Right) canMove = Day15.warehouse2.get(next).canMove(next, d);
             else canMove = Day15.warehouse2.get(next).canMove(next, d) && Day15.warehouse2.get(leftSide).canMove2(leftSide, d);
             return canMove;
         }
@@ -266,11 +253,11 @@ enum Tile2 {
         if (canMove) {
             Day15.warehouse2.remove(current);
             Day15.warehouse2.put(next, this);
-        };
+        }
         return canMove;
     }
     public boolean move2(Point current, Direction d) {
-        return true;
+        return false;
     }
     public boolean canMove(Point current, Direction d) {
         Point next = current.translate(d);
