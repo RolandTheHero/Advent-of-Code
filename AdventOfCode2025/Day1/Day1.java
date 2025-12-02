@@ -2,7 +2,7 @@ package AdventOfCode2025.Day1;
 
 import java.util.Scanner;
 
-import AdventOfCode2025.ReadFile; // Use my last ReadFile implementation from last year
+import AdventOfCode2025.ReadFile;
 
 /**
  * https://adventofcode.com/2025/day/1
